@@ -1,0 +1,17 @@
+# Binaries
+pgboundary
+bin/
+
+# IDE
+.idea/
+.vscode/
+
+# Temp files
+*.tmp
+*.log
+
+# OS specific
+.DS_Store
+pgbouncer.log
+# Added by goreleaser init:
+dist/
