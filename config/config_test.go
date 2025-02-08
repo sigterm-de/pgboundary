@@ -21,6 +21,8 @@ target = target
 [targets]
 app1 = host=https://boundary.example.com target=app1-ro
 app2 = host=https://boundary.example-two.com target=app2-ro database=custom_db auth=auth1 scope=scope1
+app3 = host=https://boundary.example.com target=app1-rw
+app4 = host=https://boundary.example.com target=app1
 `
 
 	pgbouncerContent := `[pgbouncer]
@@ -84,6 +86,16 @@ auth_file = userlist.txt
 						Database: "custom_db",
 						Auth:     "auth1",
 						Scope:    "scope1",
+					},
+					"app3": {
+						Host:     "https://boundary.example.com",
+						Target:   "app1-rw",
+						Database: "app1",
+					},
+					"app4": {
+						Host:     "https://boundary.example.com",
+						Target:   "app1",
+						Database: "app1",
 					},
 				},
 			},
@@ -169,6 +181,28 @@ func TestParseTarget(t *testing.T) {
 				Database: "custom_db",
 				Auth:     "auth1",
 				Scope:    "scope1",
+			},
+			wantErr: false,
+		},
+		{
+			name:  "target with rw suffix",
+			key:   "app3",
+			value: "host=https://boundary.example.com target=app1-rw",
+			want: Target{
+				Host:     "https://boundary.example.com",
+				Target:   "app1-rw",
+				Database: "app1",
+			},
+			wantErr: false,
+		},
+		{
+			name:  "target without ro/rw suffix",
+			key:   "app4",
+			value: "host=https://boundary.example.com target=app1",
+			want: Target{
+				Host:     "https://boundary.example.com",
+				Target:   "app1",
+				Database: "app1",
 			},
 			wantErr: false,
 		},

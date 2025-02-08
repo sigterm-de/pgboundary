@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"gopkg.in/ini.v1"
@@ -171,8 +172,7 @@ func parseTarget(value string) (Target, error) {
 
 	// If database is not explicitly set, derive it from target name
 	if target.Database == "" {
-		target.Database = strings.TrimSuffix(target.Target, "-ro")
-		target.Database = strings.ReplaceAll(target.Database, "-", "")
+		target.Database = regexp.MustCompile(`-(?:ro|rw)$`).ReplaceAllString(target.Target, "")
 	}
 
 	// Validate required fields
