@@ -20,12 +20,11 @@ var (
 
 var rootCmd = &cobra.Command{
 	Use:   "pgboundary",
-	Short: "A CLI tool to manage Boundary and PgBouncer connections",
-	Long:  `PgBoundary manages connections between HashiCorp Boundary and PgBouncer for secure database access.`,
+	Short: "pgboundary is a wrapper around Boundary and PgBouncer",
+	Long:  `pgboundary is a wrapper around Boundary and PgBouncer to be used in IDE or database tools`,
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		// Set verbose flag for all commands
-		verbose, _ := cmd.Flags().GetBool("verbose")
-		process.Verbose = verbose
+		process.Verbose, _ = cmd.Flags().GetBool("verbose")
 
 		var err error
 		if configFile != "" {
@@ -64,11 +63,11 @@ func loadConfigFromDefaultLocations() (*config.Config, error) {
 
 	var configErr error
 	for _, location := range locations {
-		if process.Verbose {
-			fmt.Printf("Checking for config in: %s\n", location)
-		}
 		conf, err := config.LoadConfig(location)
 		if err == nil {
+			if process.Verbose {
+				fmt.Printf("Using configuration file: %s\n", location)
+			}
 			return conf, nil
 		}
 		if configErr == nil {
@@ -87,5 +86,5 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", "", "config file (default: ./pgboundary.ini, ~/.pgboundary/pgboundary.ini, or $XDG_CONFIG_HOME/pgboundary/pgboundary.ini)")
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 
-	rootCmd.AddCommand(listCmd, connectCmd, shutdownCmd)
+	rootCmd.AddCommand(listCmd, connectCmd, shutdownCmd, versionCmd)
 }

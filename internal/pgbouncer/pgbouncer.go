@@ -18,6 +18,15 @@ import (
 )
 
 func UpdateConfig(cfg *config.Config, targetName string, conn *boundary.Connection) error {
+	if cfg == nil || conn == nil {
+		return fmt.Errorf("invalid configuration or connection")
+	}
+
+	target, ok := cfg.Targets[targetName]
+	if !ok {
+		return fmt.Errorf("target %q not found in configuration", targetName)
+	}
+
 	tmpDir, err := os.MkdirTemp("", "pgwrap-*")
 	if err != nil {
 		return fmt.Errorf("failed to create temp dir: %w", err)
@@ -26,14 +35,13 @@ func UpdateConfig(cfg *config.Config, targetName string, conn *boundary.Connecti
 	tmpFile := filepath.Join(tmpDir, "db.ini")
 
 	// Extract config string creation for better readability
-	configContent := formatDatabaseConfig(targetName, conn, cfg.Targets[targetName].Database)
+	configContent := formatDatabaseConfig(targetName, conn, target.Database)
 
 	if err := os.WriteFile(tmpFile, []byte(configContent), 0600); err != nil {
 		return fmt.Errorf("failed to write temp config: %w", err)
 	}
 
-	confFile := filepath.Join(cfg.PgBouncer.WorkDir, cfg.PgBouncer.ConfFile)
-	f, err := os.OpenFile(confFile, os.O_APPEND|os.O_WRONLY, 0644)
+	f, err := os.OpenFile(cfg.PgBouncer.ConfFile, os.O_APPEND|os.O_WRONLY, 0644)
 	if err != nil {
 		return fmt.Errorf("failed to open pgbouncer config: %w", err)
 	}
@@ -54,8 +62,7 @@ func formatDatabaseConfig(targetName string, conn *boundary.Connection, dbName s
 }
 
 func Reload(cfg *config.Config) error {
-	pidFile := filepath.Join(cfg.PgBouncer.WorkDir, cfg.PgBouncer.PidFile)
-	pidBytes, err := os.ReadFile(pidFile)
+	pidBytes, err := os.ReadFile(cfg.PgBouncer.PidFile)
 	if err != nil {
 		if !os.IsNotExist(err) {
 			return fmt.Errorf("failed to read pid file: %w", err)
@@ -85,11 +92,10 @@ func Reload(cfg *config.Config) error {
 }
 
 func Shutdown(cfg *config.Config) error {
-	pidFile := filepath.Join(cfg.PgBouncer.WorkDir, cfg.PgBouncer.PidFile)
-	pidBytes, err := os.ReadFile(pidFile)
+	pidBytes, err := os.ReadFile(cfg.PgBouncer.PidFile)
 	if err != nil {
 		if os.IsNotExist(err) {
-			return fmt.Errorf("no PID file found at %s", pidFile)
+			return fmt.Errorf("no PID file found at %s", cfg.PgBouncer.PidFile)
 		}
 		return fmt.Errorf("failed to read PID file: %w", err)
 	}
@@ -111,8 +117,7 @@ func Shutdown(cfg *config.Config) error {
 }
 
 func CleanConfig(cfg *config.Config) error {
-	confFile := filepath.Join(cfg.PgBouncer.WorkDir, cfg.PgBouncer.ConfFile)
-	content, err := os.ReadFile(confFile)
+	content, err := os.ReadFile(cfg.PgBouncer.ConfFile)
 	if err != nil {
 		return fmt.Errorf("failed to read config file: %w", err)
 	}
@@ -129,7 +134,7 @@ func CleanConfig(cfg *config.Config) error {
 
 	// Ensure file ends with a newline
 	newContent := strings.TrimSpace(strings.Join(newLines, "\n")) + "\n"
-	if err := os.WriteFile(confFile, []byte(newContent), 0644); err != nil {
+	if err := os.WriteFile(cfg.PgBouncer.ConfFile, []byte(newContent), 0644); err != nil {
 		return fmt.Errorf("failed to write config file: %w", err)
 	}
 
@@ -259,7 +264,7 @@ func parseIncludedFile(filePath string) ([]ConnectionDetail, error) {
 
 func ShutdownConnection(cfg *config.Config, connectionName string) error {
 	// Get connection details to find the boundary PID
-	connections, err := GetConnectionDetails(filepath.Join(cfg.PgBouncer.WorkDir, cfg.PgBouncer.ConfFile))
+	connections, err := GetConnectionDetails(cfg.PgBouncer.ConfFile)
 	if err != nil {
 		return fmt.Errorf("failed to get connection details: %w", err)
 	}
@@ -289,7 +294,7 @@ func ShutdownConnection(cfg *config.Config, connectionName string) error {
 	}
 
 	// Check if there are any remaining boundary connections
-	remainingConnections, err := GetConnectionDetails(filepath.Join(cfg.PgBouncer.WorkDir, cfg.PgBouncer.ConfFile))
+	remainingConnections, err := GetConnectionDetails(cfg.PgBouncer.ConfFile)
 	if err != nil {
 		return fmt.Errorf("failed to check remaining connections: %w", err)
 	}
@@ -325,8 +330,7 @@ func ShutdownConnection(cfg *config.Config, connectionName string) error {
 }
 
 func removeConnection(cfg *config.Config, connectionName string) error {
-	confFile := filepath.Join(cfg.PgBouncer.WorkDir, cfg.PgBouncer.ConfFile)
-	content, err := os.ReadFile(confFile)
+	content, err := os.ReadFile(cfg.PgBouncer.ConfFile)
 	if err != nil {
 		return fmt.Errorf("failed to read config file: %w", err)
 	}
@@ -352,7 +356,7 @@ func removeConnection(cfg *config.Config, connectionName string) error {
 
 	// Write the updated config back
 	newContent := strings.Join(newLines, "\n")
-	if err := os.WriteFile(confFile, []byte(newContent), 0644); err != nil {
+	if err := os.WriteFile(cfg.PgBouncer.ConfFile, []byte(newContent), 0644); err != nil {
 		return fmt.Errorf("failed to write config file: %w", err)
 	}
 
@@ -383,8 +387,7 @@ func hasConnection(filePath string, connectionName string) bool {
 }
 
 func IsTargetConnected(cfg *config.Config, target string) (bool, error) {
-	confPath := filepath.Join(cfg.PgBouncer.WorkDir, cfg.PgBouncer.ConfFile)
-	connections, err := GetConnectionDetails(confPath)
+	connections, err := GetConnectionDetails(cfg.PgBouncer.ConfFile)
 	if err != nil {
 		return false, fmt.Errorf("failed to get connection details: %w", err)
 	}

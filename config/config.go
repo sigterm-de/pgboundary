@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"regexp"
 	"strings"
 
 	"gopkg.in/ini.v1"
@@ -87,8 +88,8 @@ func LoadConfig(path string) (*Config, error) {
 	}
 
 	// Load and parse pgbouncer config
-	pgBouncerConfPath := filepath.Join(cfg.PgBouncer.WorkDir, cfg.PgBouncer.ConfFile)
-	if err := cfg.loadPgBouncerConfig(pgBouncerConfPath); err != nil {
+	cfg.PgBouncer.ConfFile = filepath.Join(cfg.PgBouncer.WorkDir, cfg.PgBouncer.ConfFile)
+	if err := cfg.loadPgBouncerConfig(cfg.PgBouncer.ConfFile); err != nil {
 		return nil, err
 	}
 
@@ -131,9 +132,9 @@ func (c *Config) loadPgBouncerConfig(path string) error {
 
 			switch key {
 			case "pidfile":
-				c.PgBouncer.PidFile = value
+				c.PgBouncer.PidFile = filepath.Join(c.PgBouncer.WorkDir, value)
 			case "auth_file":
-				c.PgBouncer.AuthFile = value
+				c.PgBouncer.AuthFile = filepath.Join(c.PgBouncer.WorkDir, value)
 			}
 		}
 	}
@@ -171,8 +172,7 @@ func parseTarget(value string) (Target, error) {
 
 	// If database is not explicitly set, derive it from target name
 	if target.Database == "" {
-		target.Database = strings.TrimSuffix(target.Target, "-ro")
-		target.Database = strings.ReplaceAll(target.Database, "-", "")
+		target.Database = regexp.MustCompile(`-(?:ro|rw)$`).ReplaceAllString(target.Target, "")
 	}
 
 	// Validate required fields
@@ -183,6 +183,11 @@ func parseTarget(value string) (Target, error) {
 	// Validate that host starts with https://
 	if !strings.HasPrefix(target.Host, "https://") {
 		return Target{}, fmt.Errorf("host must start with https:// (got: %s)", target.Host)
+	}
+
+	// Additional validation
+	if strings.TrimSpace(target.Target) == "" {
+		return Target{}, fmt.Errorf("target name cannot be empty")
 	}
 
 	return target, nil
