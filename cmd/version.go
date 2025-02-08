@@ -102,8 +102,3 @@ var versionCmd = &cobra.Command{
 		}
 	},
 }
-
-func init() {
-	versionCmd.Flags().BoolP("verbose", "v", false, "show verbose version information including latest available releases")
-	rootCmd.AddCommand(versionCmd)
-}

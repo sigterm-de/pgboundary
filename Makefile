@@ -29,6 +29,7 @@ clean:
 	rm -f $(BINARY_NAME)
 	$(GO) clean
 	$(GO) fmt ./... && $(GO) vet ./... && $(GO) mod tidy
+	if command -v golangci-lint >/dev/null 2>&1; then golangci-lint run; fi
 
 # Build and run tests
 all: clean build test

@@ -63,7 +63,10 @@ func StartConnection(target config.Target, authScope, targetScope, authMethod st
 	if err != nil {
 		return nil, fmt.Errorf("failed to create boundary client: %w", err)
 	}
-	client.SetAddr(target.Host)
+	err = client.SetAddr(target.Host)
+	if err != nil {
+		return nil, fmt.Errorf("failed to set boundary address: %w", err)
+	}
 
 	// Get scope ID if not global
 	var scopeId string

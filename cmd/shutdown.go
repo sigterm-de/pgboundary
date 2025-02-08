@@ -20,8 +20,7 @@ Without arguments, all connections will be shutdown.`,
 	Args: cobra.MaximumNArgs(1),
 	RunE: runShutdown,
 	PreRun: func(cmd *cobra.Command, args []string) {
-		verbose, _ := cmd.Flags().GetBool("verbose")
-		process.Verbose = verbose
+		process.Verbose, _ = cmd.Flags().GetBool("verbose")
 	},
 }
 

@@ -14,8 +14,7 @@ var listCmd = &cobra.Command{
 	Short: "List available boundary targets and active pgbouncer connections",
 	RunE:  runList,
 	PreRun: func(cmd *cobra.Command, args []string) {
-		verbose, _ := cmd.Flags().GetBool("verbose")
-		process.Verbose = verbose
+		process.Verbose, _ = cmd.Flags().GetBool("verbose")
 	},
 }
 

@@ -24,8 +24,7 @@ var rootCmd = &cobra.Command{
 	Long:  `pgboundary is a wrapper around Boundary and PgBouncer to be used in IDE or database tools`,
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		// Set verbose flag for all commands
-		verbose, _ := cmd.Flags().GetBool("verbose")
-		process.Verbose = verbose
+		process.Verbose, _ = cmd.Flags().GetBool("verbose")
 
 		var err error
 		if configFile != "" {
@@ -64,9 +63,6 @@ func loadConfigFromDefaultLocations() (*config.Config, error) {
 
 	var configErr error
 	for _, location := range locations {
-		if process.Verbose {
-			fmt.Printf("Checking for config in: %s\n", location)
-		}
 		conf, err := config.LoadConfig(location)
 		if err == nil {
 			if process.Verbose {
