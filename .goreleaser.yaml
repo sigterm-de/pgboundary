@@ -28,6 +28,15 @@ builds:
 archives:
   - formats:
       - zip
+    files:
+      # demo configuration files
+      - pg_auth
+      - pg_config.ini
+      - pgboundary.ini
+      # full readme + license
+      - README.md
+      - pgboundary.png
+      - LICENSE
     # this name template makes the OS and Arch compatible with the results of `uname`.
     name_template: >-
       {{ .ProjectName }}_
