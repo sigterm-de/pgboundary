@@ -6,7 +6,7 @@ This is a simple wrapper around the `boundary` and `pgbouncer` CLI tools.
 
 This project is for a specific use case
 
-- You have an internal postgres database
+- You have an internal PostgreSQL database
 - You connect to it via HashiCorp Boundary
 - You are using OIDC for AuthZ and AuthN
 - You are using HashiCorp Vault integration in Boundary to provide dynamic credentials
@@ -66,31 +66,40 @@ A target is a configuration item inside Boundary defining to which entity a conn
 
 4. Configuration
 
-   The configuration file (`pgboundary.ini`) consists of three main sections:
+   The configuration file (`pgboundary.ini`) consists of these main sections:
 
-    ```ini
-    [pgbouncer]
-    workdir = /usr/local/var/pgbouncer
-    conffile = pg_config.ini
-
-    [scopes]
-    auth = global    # Default authentication scope
-    target = global  # Default target scope
-
-    [targets]
-    # Basic target with global scopes
-    demo-dev = host=https://boundary.example.com target=demo-ro
-
-    # Target with custom scopes and database
-    demo-stage = host=https://boundary.stage.example.com target=demo-ro auth=org scope=dev database=testdb
-    ```
+   ```dosini
+   [scopes]
+   ; default scopes for authentication and targets
+   auth = org
+   target = dev
+   
+   [auth]
+   ; default authentication method
+   method = oidc
+   
+   [pgbouncer]
+   ; workdir is either absolute or relative to this file; holds the `conffile` and from there the `auth_file`
+   ; recommendation: leave all files in 1 place
+   workdir = .
+   conffile = pg_config.ini
+   
+   [targets]
+   ; standard example
+   demo-dev = host=https://boundary.example.com target=demo-ro
+   ; another environment
+   demo-stage = host=https://boundary.stage.example.com target=demo-ro
+   
+   ; this is a shared RDS instance and we have to provide the database name, note the scopes for authentication (`auth`) and target (`scope`)
+   demo-dev-2 = host=https://boundary.example.com auth=org target=demo-ro scope=dev database=testdb
+   ```
 
    Each target entry consists of:
     - `host`: Boundary server URL (including https://)
     - `target`: Boundary target name
     - `auth`: (optional) Authentication scope, overrides default
     - `scope`: (optional) Target scope, overrides default
-    - `database`: (optional) Database name, defaults to target name without "-ro" suffix
+    - `database`: (optional) Database name; defaults to `target` name without "-ro" or "-rw" suffix
 
 5. Configure your IDE/database tool:
     - Host: `127.0.0.1`
@@ -122,20 +131,13 @@ pgboundary shutdown
 - For shared database instances, specify the database name in the target configuration
 - Scopes can be set globally in the `[scopes]` section or per-target
 - Use the verbose flag (`-v`) for debugging connection issues
+- If `pgboundary` is in your `$PATH`, you can set it up as a connection script in your tooling
 
 ## Limitations
 
-- Only OIDC authentication is supported
+- only **OIDC** authentication is supported
+- credentials are expected to be provided by Boundary (via Vault)
 
 ## License
 
 MIT
-
-## TODO
-
-- [x] `shutdown` // remove external binaries (`pgrep`, `pkill`)
-- [x] `connect` // remove external binaries for authentication  
-  I'll leave the call to boundary CLI in as handling the possibly different AuthN methods would be re-inventing the wheel.  
-  See: https://github.com/hashicorp/boundary/tree/main/internal/cmd/commands/authenticate
-- [ ] `connect` // support individual auth methods per target
-- [ ] more tests
