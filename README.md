@@ -124,6 +124,12 @@ pgboundary shutdown demo-dev
 
 # Shutdown all connections
 pgboundary shutdown
+
+# Show version information
+pgboundary version
+
+# Show detailed version information including latest available releases
+pgboundary version -v
 ```
 
 ### Configuration Tips

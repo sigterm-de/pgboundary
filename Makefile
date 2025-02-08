@@ -3,10 +3,13 @@
 # Build variables
 BINARY_NAME=pgboundary
 GO=go
+VERSION=$(shell git describe --tags --always --dirty 2>/dev/null || echo "dev")
+COMMIT=$(shell git rev-parse --short HEAD 2>/dev/null || echo "none")
+BUILD_DATE=$(shell date -u +'%Y-%m-%d_%H:%M:%S')
 
 # Build the application
 build:
-	$(GO) build -o $(BINARY_NAME)
+	$(GO) build -ldflags "-X pgboundary/cmd.version=$(VERSION) -X pgboundary/cmd.commit=$(COMMIT) -X pgboundary/cmd.buildDate=$(BUILD_DATE)" -o $(BINARY_NAME)
 
 # Run tests
 test:

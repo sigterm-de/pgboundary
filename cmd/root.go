@@ -20,8 +20,8 @@ var (
 
 var rootCmd = &cobra.Command{
 	Use:   "pgboundary",
-	Short: "A CLI tool to manage Boundary and PgBouncer connections",
-	Long:  `PgBoundary manages connections between HashiCorp Boundary and PgBouncer for secure database access.`,
+	Short: "pgboundary is a tool for PostgreSQL boundary testing",
+	Long:  `A tool to help test PostgreSQL boundaries and edge cases`,
 	PersistentPreRunE: func(cmd *cobra.Command, args []string) error {
 		// Set verbose flag for all commands
 		verbose, _ := cmd.Flags().GetBool("verbose")
