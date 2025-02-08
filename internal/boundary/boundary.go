@@ -26,6 +26,8 @@ type Connection struct {
 	Pid      int
 }
 
+const defaultTimeout = 45 * time.Second
+
 func getPrimaryAuthMethodId(client *api.Client, scopeId string, preferredMethod string) (string, error) {
 	authMethodClient := authmethods.NewClient(client)
 
@@ -68,7 +70,10 @@ func StartConnection(target config.Target, authScope, targetScope, authMethod st
 	if authScope != "global" {
 		scopeClient := scopes.NewClient(client)
 
-		listResult, err := scopeClient.List(context.Background(), "global")
+		ctx, cancel := context.WithTimeout(context.Background(), defaultTimeout)
+		defer cancel()
+
+		listResult, err := scopeClient.List(ctx, "global")
 		if err != nil {
 			return nil, fmt.Errorf("failed to list scopes: %w", err)
 		}
@@ -120,6 +125,7 @@ func StartConnection(target config.Target, authScope, targetScope, authMethod st
 	if err != nil {
 		return nil, fmt.Errorf("failed to create temp dir: %w", err)
 	}
+	defer os.RemoveAll(tmpDir)
 
 	outputFile := filepath.Join(tmpDir, "connection.json")
 

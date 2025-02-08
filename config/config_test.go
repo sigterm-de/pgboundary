@@ -63,9 +63,9 @@ auth_file = userlist.txt
 					AuthFile string
 				}{
 					WorkDir:  filepath.Join(tmpDir, "work"),
-					ConfFile: "pgbouncer.ini",
-					PidFile:  "pgbouncer.pid",
-					AuthFile: "userlist.txt",
+					ConfFile: filepath.Join(tmpDir, "work", "pgbouncer.ini"),
+					PidFile:  filepath.Join(tmpDir, "work", "pgbouncer.pid"),
+					AuthFile: filepath.Join(tmpDir, "work", "userlist.txt"),
 				},
 				Scopes: struct {
 					Auth   string
