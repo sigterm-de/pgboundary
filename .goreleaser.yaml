@@ -55,5 +55,37 @@ changelog:
 
 release:
   footer: >-
+    
     ---
+    
     Released by [GoReleaser](https://github.com/goreleaser/goreleaser).
+
+brews:
+  - name: pgboundary
+    directory: HomebrewFormula
+    homepage: "https://github.com/sigterm-de/pgboundary"
+    description: "A wrapper around boundary and pgbouncer CLI for integration into IDE/database tooling"
+    install: |
+      # Install the binary into Homebrew's bin directory
+      bin.install "pgboundary"
+  
+      # Install example configuration files into a documentation directory
+      doc.install "pgboundary.ini"
+      doc.install "pg_auth"
+      doc.install "pg_config.ini"
+    caveats: |
+      The example configuration file has been installed at:
+        #{doc}/pgboundary.ini
+        #{doc}/pg_config.ini
+        #{doc}/pg_auth
+      You may copy and modify it for your use:
+        cp #{doc}/pgboundary.ini ~/pgboundary/pgboundary.ini
+        cp #{doc}/pg_config.ini ~/pgboundary/pg_config.ini
+        cp #{doc}/pg_auth ~/pgboundary/pg_auth
+    dependencies:
+      - name: boundary
+      - name: pgbouncer
+    repository:
+      owner: sigterm-de
+      name: pgboundary
+      branch: main
