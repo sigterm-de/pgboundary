@@ -3,9 +3,10 @@ package process
 import (
 	"errors"
 	"fmt"
-	"os"
 	"strings"
 	"syscall"
+
+	"github.com/shirou/gopsutil/v4/process"
 )
 
 // Verbose enables debug output
@@ -23,13 +24,24 @@ func KillProcess(pid int) error {
 
 // IsProcessType checks if a process with given PID is of the expected type
 func IsProcessType(pid int, processName string) bool {
-	cmdlinePath := fmt.Sprintf("/proc/%d/cmdline", pid)
-	cmdline, err := os.ReadFile(cmdlinePath)
+	proc, err := process.NewProcess(int32(pid))
 	if err != nil {
 		return false
 	}
-	if Verbose && strings.HasPrefix(string(cmdline), processName) {
+
+	name, err := proc.Name()
+	if err != nil {
+		return false
+	}
+
+	cmdline, err := proc.Cmdline()
+	if err != nil {
+		return false
+	}
+
+	matches := strings.EqualFold(name, processName) || strings.HasPrefix(cmdline, processName)
+	if Verbose && matches {
 		fmt.Printf("found %s process: %d\n", processName, pid)
 	}
-	return strings.HasPrefix(string(cmdline), processName)
+	return matches
 }
