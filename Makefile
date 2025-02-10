@@ -27,6 +27,7 @@ release:
 clean:
 	rm -rf dist
 	rm -f $(BINARY_NAME)
+	$(GO) mod tidy
 	$(GO) clean
 	$(GO) fmt ./... && $(GO) vet ./... && $(GO) mod tidy
 	if command -v golangci-lint >/dev/null 2>&1; then golangci-lint run; fi
