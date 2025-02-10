@@ -45,7 +45,7 @@ A target is a configuration item inside Boundary defining to which entity a conn
 
 1. Install dependencies CLI
 
-    - PgBouncer via [brew](https://formulae.brew.sh/formula/pgbouncer)
+    - [PgBouncer](https://www.pgbouncer.org/) via [brew](https://formulae.brew.sh/formula/pgbouncer)
       ```
       brew install pgbouncer
       ```
@@ -55,7 +55,11 @@ A target is a configuration item inside Boundary defining to which entity a conn
       brew install hashicorp/tap/boundary
       ```
 
-2. Download the latest release from the [releases page](https://github.com/sigterm-de/pgboundary/releases)
+2. Download the latest release from the [releases page](https://github.com/sigterm-de/pgboundary/releases)  
+    Or install via brew  
+    ```
+    brew install sigterm-de/pgbopundary/pgboundary
+    ```
 
 3. Copy the files `pgboundary.ini`, `pg_config.ini` and `pg_auth` to a convenient place. The binary tries to find them in the following locations:
     - `./`
