@@ -162,26 +162,9 @@ func CheckStatus(pidFile string) (bool, int, error) {
 		return false, -1, fmt.Errorf("invalid pid file content: %w", err)
 	}
 
-	proc, err := os.FindProcess(pid)
-	if err != nil {
-		return false, -1, fmt.Errorf("process with pid %d not found: %w", pid, err)
-	}
-
-	// Send signal 0 to check if process exists
-	err = proc.Signal(syscall.Signal(0))
-	if err != nil {
-		return false, -1, fmt.Errorf("process with pid %d is not running: %w", pid, err)
-	}
-
-	// Check if it's actually pgbouncer
-	cmdlinePath := fmt.Sprintf("/proc/%d/cmdline", pid)
-	cmdline, err := os.ReadFile(cmdlinePath)
-	if err != nil {
-		return false, -1, fmt.Errorf("cannot read process cmdline: %w", err)
-	}
-
-	if !strings.Contains(string(cmdline), "pgbouncer") {
-		return false, -1, fmt.Errorf("process %d is not pgbouncer", pid)
+	// Use process.IsProcessType to check if it's a running pgbouncer process
+	if !process.IsProcessType(pid, "pgbouncer") {
+		return false, -1, fmt.Errorf("process %d is not pgbouncer or is not running", pid)
 	}
 
 	return true, pid, nil

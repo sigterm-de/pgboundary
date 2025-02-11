@@ -143,6 +143,9 @@ pgboundary version -v
 - Scopes can be set globally in the `[scopes]` section or per-target
 - Use the verbose flag (`-v`) for debugging connection issues
 - If `pgboundary` is in your `$PATH`, you can set it up as a connection script in your tooling
+- In some IDEs you may have to set something like "Single Database Mode" (from [JetBrains](https://www.jetbrains.com/help/datagrip/2024.3/data-sources-and-drivers-dialog.html?data.sources.and.drivers.dialog#optionsTab))  
+  > In the database tree view, show and enable only the database that you specified in the connection settings.  
+  > When you connect to a data source, DataGrip can retrieve and display you all the databases that the data source has. But in some cases (for example, with certain settings of PgBouncer), you can or are allowed to work only with a certain database. In the database tree view with the Single database mode enabled, you see only the database that you specified in the connection settings.
 
 ## Limitations
 
