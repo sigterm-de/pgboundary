@@ -33,7 +33,8 @@ func runConnect(cmd *cobra.Command, args []string) error {
 		return fmt.Errorf("failed to check target connection status: %w", err)
 	}
 	if isConnected {
-		return fmt.Errorf("target %q is already connected", target)
+		fmt.Printf("Warning: target %q is already connected\n", target)
+		return nil
 	}
 
 	// Get authentication scope

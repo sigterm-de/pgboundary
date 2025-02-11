@@ -200,27 +200,14 @@ func Shutdown() error {
 	// Get our own PID to exclude it
 	ownPid := os.Getpid()
 
-	procDir, err := os.Open("/proc")
+	processes, err := process.Processes()
 	if err != nil {
-		return fmt.Errorf("failed to open /proc: %w", err)
-	}
-	defer procDir.Close()
-
-	entries, err := procDir.Readdir(-1)
-	if err != nil {
-		return fmt.Errorf("failed to read /proc directory: %w", err)
+		return fmt.Errorf("failed to list processes: %w", err)
 	}
 
 	foundProcesses := false
-	for _, entry := range entries {
-		// Only look at directory entries that are numbers (PIDs)
-		if !entry.IsDir() {
-			continue
-		}
-		pid, err := strconv.Atoi(entry.Name())
-		if err != nil {
-			continue
-		}
+	for _, proc := range processes {
+		pid := int(proc.Pid)
 
 		// Skip our own process
 		if pid == ownPid {

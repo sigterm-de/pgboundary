@@ -45,3 +45,8 @@ func IsProcessType(pid int, processName string) bool {
 	}
 	return matches
 }
+
+// Processes returns a list of all running processes
+func Processes() ([]*process.Process, error) {
+	return process.Processes()
+}
