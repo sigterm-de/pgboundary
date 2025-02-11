@@ -52,6 +52,7 @@ changelog:
     exclude:
       - "^docs:"
       - "^test:"
+      - "^chore: Brew formula update"
 
 release:
   footer: >-
@@ -62,6 +63,7 @@ release:
 
 brews:
   - name: pgboundary
+    commit_msg_template: "chore: Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
     directory: HomebrewFormula
     homepage: "https://github.com/sigterm-de/pgboundary"
     description: "A wrapper around boundary and pgbouncer CLI for integration into IDE/database tooling"
