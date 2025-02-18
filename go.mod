@@ -4,7 +4,7 @@ go 1.23.6
 
 require (
 	github.com/adrg/xdg v0.5.3
-	github.com/hashicorp/boundary/api v0.0.53
+	github.com/hashicorp/boundary/api v0.0.54
 	github.com/shirou/gopsutil/v4 v4.25.1
 	github.com/spf13/cobra v1.9.1
 	gopkg.in/ini.v1 v1.67.0
@@ -15,7 +15,7 @@ require (
 	github.com/go-ole/go-ole v1.2.6 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
-	github.com/hashicorp/go-kms-wrapping/v2 v2.0.14 // indirect
+	github.com/hashicorp/go-kms-wrapping/v2 v2.0.16 // indirect
 	github.com/hashicorp/go-retryablehttp v0.7.7 // indirect
 	github.com/hashicorp/go-rootcerts v1.0.2 // indirect
 	github.com/hashicorp/go-secure-stdlib/parseutil v0.1.8 // indirect
@@ -36,5 +36,5 @@ require (
 	golang.org/x/sys v0.28.0 // indirect
 	golang.org/x/time v0.3.0 // indirect
 	google.golang.org/grpc v1.61.0 // indirect
-	google.golang.org/protobuf v1.33.0 // indirect
+	google.golang.org/protobuf v1.34.2 // indirect
 )
