@@ -147,6 +147,12 @@ pgboundary version -v
   > In the database tree view, show and enable only the database that you specified in the connection settings.  
   > When you connect to a data source, DataGrip can retrieve and display you all the databases that the data source has. But in some cases (for example, with certain settings of PgBouncer), you can or are allowed to work only with a certain database. In the database tree view with the Single database mode enabled, you see only the database that you specified in the connection settings.
 
+## Troubleshooting
+
+- **First of all**, use the Boundary desktop application to figure out your actual permission set. This wrapper can only provide what is already present.
+- In case the boundary authentication and connection is `OK`, but pgbouncer is `NOK`, please run pgbouncer manually to get more feedback - `pgbouncer --daemon <path>/<to>/pg_config.ini`
+- There might be configuration relicts in `pg_config.ini`. To purge them, please run `pgboundary shutdown` (until a dedicated command is available)
+
 ## Limitations
 
 - only **OIDC** authentication is supported
