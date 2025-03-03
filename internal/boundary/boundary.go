@@ -8,6 +8,7 @@ import (
 	"os/exec"
 	"path/filepath"
 	"strconv"
+	"strings"
 	"time"
 
 	"pgboundary/config"
@@ -216,6 +217,15 @@ func Shutdown() error {
 
 		// Check if it's a boundary process
 		if process.IsProcessType(pid, "boundary") {
+			// Skip boundary cache processes
+			cmdline, err := proc.Cmdline()
+			if err == nil && strings.Contains(cmdline, "boundary cache") {
+				if process.Verbose {
+					fmt.Printf("Skipping boundary cache process: %d\n", pid)
+				}
+				continue
+			}
+
 			foundProcesses = true
 			if err := process.KillProcess(pid); err != nil {
 				return fmt.Errorf("failed to kill boundary process: %w", err)
