@@ -5,7 +5,7 @@ go 1.23.6
 require (
 	github.com/adrg/xdg v0.5.3
 	github.com/hashicorp/boundary/api v0.0.54
-	github.com/shirou/gopsutil/v4 v4.25.3
+	github.com/shirou/gopsutil/v4 v4.25.4
 	github.com/spf13/cobra v1.9.1
 	gopkg.in/ini.v1 v1.67.0
 )
