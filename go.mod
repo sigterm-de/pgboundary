@@ -1,10 +1,10 @@
 module pgboundary
 
-go 1.23.6
+go 1.23.9
 
 require (
 	github.com/adrg/xdg v0.5.3
-	github.com/hashicorp/boundary/api v0.0.54
+	github.com/hashicorp/boundary/api v0.0.55
 	github.com/shirou/gopsutil/v4 v4.25.3
 	github.com/spf13/cobra v1.9.1
 	gopkg.in/ini.v1 v1.67.0
@@ -33,8 +33,8 @@ require (
 	github.com/tklauser/go-sysconf v0.3.12 // indirect
 	github.com/tklauser/numcpus v0.6.1 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
-	golang.org/x/sys v0.28.0 // indirect
-	golang.org/x/time v0.3.0 // indirect
+	golang.org/x/sys v0.33.0 // indirect
+	golang.org/x/time v0.11.0 // indirect
 	google.golang.org/grpc v1.61.0 // indirect
 	google.golang.org/protobuf v1.34.2 // indirect
 )
