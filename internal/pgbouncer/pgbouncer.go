@@ -45,7 +45,11 @@ func UpdateConfig(cfg *config.Config, targetName string, conn *boundary.Connecti
 	if err != nil {
 		return fmt.Errorf("failed to open pgbouncer config: %w", err)
 	}
-	defer f.Close()
+	defer func() {
+		if err := f.Close(); err != nil {
+			fmt.Printf("failed to close pgbouncer config: %v\n", err)
+		}
+	}()
 
 	if _, err := fmt.Fprintf(f, "\n%%include %s\n", tmpFile); err != nil {
 		return fmt.Errorf("failed to update pgbouncer config: %w", err)
@@ -329,7 +333,11 @@ func removeConnection(cfg *config.Config, connectionName string) error {
 			includePath := strings.TrimSpace(strings.TrimPrefix(trimmed, "%include"))
 			if hasConnection(includePath, connectionName) {
 				// Remove the included file
-				os.Remove(includePath)
+				func() {
+					if err := os.Remove(includePath); err != nil {
+						fmt.Printf("failed to remove include file %s: %v\n", includePath, err)
+					}
+				}()
 				continue
 			}
 		}

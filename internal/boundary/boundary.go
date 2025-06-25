@@ -129,7 +129,11 @@ func StartConnection(target config.Target, authScope, targetScope, authMethod st
 	if err != nil {
 		return nil, fmt.Errorf("failed to create temp dir: %w", err)
 	}
-	defer os.RemoveAll(tmpDir)
+	defer func() {
+		if err := os.RemoveAll(tmpDir); err != nil {
+			fmt.Printf("failed to remove temp dir: %v\n", err)
+		}
+	}()
 
 	outputFile := filepath.Join(tmpDir, "connection.json")
 
@@ -147,7 +151,11 @@ func StartConnection(target config.Target, authScope, targetScope, authMethod st
 	if err != nil {
 		return nil, fmt.Errorf("failed to create output file: %w", err)
 	}
-	defer output.Close()
+	defer func() {
+		if err := output.Close(); err != nil {
+			fmt.Printf("failed to close output file: %v\n", err)
+		}
+	}()
 
 	connectCmd.Stdout = output
 	connectCmd.Stderr = os.Stderr
