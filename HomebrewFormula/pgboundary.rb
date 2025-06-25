@@ -5,15 +5,15 @@
 class Pgboundary < Formula
   desc "A wrapper around boundary and pgbouncer CLI for integration into IDE/database tooling"
   homepage "https://github.com/sigterm-de/pgboundary"
-  version "0.5.2"
+  version "0.5.3"
 
   depends_on "boundary"
   depends_on "pgbouncer"
 
   on_macos do
     if Hardware::CPU.intel?
-      url "https://github.com/sigterm-de/pgboundary/releases/download/v0.5.2/pgboundary_Darwin_x86_64.zip"
-      sha256 "3fd8657f38cc7bbac8e8b92557565776cb9c3ac99ef9724a93e36b57c2dde567"
+      url "https://github.com/sigterm-de/pgboundary/releases/download/v0.5.3/pgboundary_Darwin_x86_64.zip"
+      sha256 "2b6218c0349ac03de8e01411c0973abac90b5c813c85a5b9378d82ff87d802a4"
 
       def install
         # Install the binary into Homebrew's bin directory
@@ -26,8 +26,8 @@ class Pgboundary < Formula
       end
     end
     if Hardware::CPU.arm?
-      url "https://github.com/sigterm-de/pgboundary/releases/download/v0.5.2/pgboundary_Darwin_arm64.zip"
-      sha256 "add2375ee81113528c9b88f9e56bae1298d1769336073557c4798ed77b3065a1"
+      url "https://github.com/sigterm-de/pgboundary/releases/download/v0.5.3/pgboundary_Darwin_arm64.zip"
+      sha256 "40f27d8c793d4a965275bef890eb44a0a3577b73bc2132c9fca0191a39483f1e"
 
       def install
         # Install the binary into Homebrew's bin directory
@@ -43,8 +43,8 @@ class Pgboundary < Formula
 
   on_linux do
     if Hardware::CPU.intel? and Hardware::CPU.is_64_bit?
-      url "https://github.com/sigterm-de/pgboundary/releases/download/v0.5.2/pgboundary_Linux_x86_64.zip"
-      sha256 "5350a7febddcf46766f72c07fafee762cfabb662022aff5967c545eb5736df95"
+      url "https://github.com/sigterm-de/pgboundary/releases/download/v0.5.3/pgboundary_Linux_x86_64.zip"
+      sha256 "b39df0d21e6a5d5615453ead1b98360d2acea6ab8f8a40adc419ac3194f6bdc9"
       def install
         # Install the binary into Homebrew's bin directory
         bin.install "pgboundary"
@@ -56,8 +56,8 @@ class Pgboundary < Formula
       end
     end
     if Hardware::CPU.arm? and Hardware::CPU.is_64_bit?
-      url "https://github.com/sigterm-de/pgboundary/releases/download/v0.5.2/pgboundary_Linux_arm64.zip"
-      sha256 "6ed407becb006b398bbccd44a628e0d9d230dea08a71188ad9d7e8f8260addf4"
+      url "https://github.com/sigterm-de/pgboundary/releases/download/v0.5.3/pgboundary_Linux_arm64.zip"
+      sha256 "d7d5b45fd019dff59b7173219f54fc7e155b0da4ae146e8add7cd8a7a1149f1e"
       def install
         # Install the binary into Homebrew's bin directory
         bin.install "pgboundary"
