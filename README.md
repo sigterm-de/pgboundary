@@ -59,7 +59,7 @@ A target is a configuration item inside Boundary defining to which entity a conn
     Or install via brew  
     ```
     brew tap sigterm-de/pgboundary https://github.com/sigterm-de/pgboundary
-    brew install pgboundary
+    brew install --cask pgboundary
     ```
 
 3. Copy the files `pgboundary.ini`, `pg_config.ini` and `pg_auth` to a convenient place. The binary tries to find them in the following locations:
@@ -152,6 +152,84 @@ pgboundary version -v
 - **First of all**, use the Boundary desktop application to figure out your actual permission set. This wrapper can only provide what is already present.
 - In case the boundary authentication and connection is `OK`, but pgbouncer is `NOK`, please run pgbouncer manually to get more feedback - `pgbouncer --daemon <path>/<to>/pg_config.ini`
 - There might be configuration relicts in `pg_config.ini`. To purge them, please run `pgboundary shutdown` (until a dedicated command is available)
+
+## Security & Verification
+
+### Release Signatures
+
+All releases are signed using [cosign](https://docs.sigstore.dev/) with keyless signing tied to this GitHub repository. This provides cryptographic proof that releases come from the official repository.
+
+#### Verifying Release Integrity
+
+1. **Download the release files**:
+   ```bash
+   # Download the binary archive, checksums, and signature files
+   wget https://github.com/sigterm-de/pgboundary/releases/download/v1.0.0/pgboundary_Linux_x86_64.tar.gz
+   wget https://github.com/sigterm-de/pgboundary/releases/download/v1.0.0/pgboundary_1.0.0_checksums.txt
+   wget https://github.com/sigterm-de/pgboundary/releases/download/v1.0.0/pgboundary_1.0.0_checksums.txt.sig
+   wget https://github.com/sigterm-de/pgboundary/releases/download/v1.0.0/pgboundary_1.0.0_checksums.txt.pem
+   ```
+
+2. **Install cosign** (if not already installed):
+   ```bash
+   # Install cosign
+   go install github.com/sigstore/cosign/v2/cmd/cosign@latest
+   # Or use your package manager (brew, apt, etc.)
+   ```
+
+3. **Verify the signature**:
+   ```bash
+   cosign verify-blob \
+     --certificate-identity 'https://github.com/sigterm-de/pgboundary/.github/workflows/release.yml@refs/tags/v1.0.0' \
+     --certificate-oidc-issuer 'https://token.actions.githubusercontent.com' \
+     --cert pgboundary_1.0.0_checksums.txt.pem \
+     --signature pgboundary_1.0.0_checksums.txt.sig \
+     ./pgboundary_1.0.0_checksums.txt
+   ```
+
+4. **Verify file integrity**:
+   ```bash
+   # Check that your downloaded archive matches the signed checksums
+   sha256sum --check --ignore-missing pgboundary_1.0.0_checksums.txt
+   ```
+
+**Note**: Replace `v1.0.0` with the actual version you're downloading.
+
+### Software Bill of Materials (SBOM)
+
+Each release includes a comprehensive Software Bill of Materials (SBOM) generated using [Syft](https://github.com/anchore/syft). The SBOM documents all dependencies, versions, and security metadata in SPDX-JSON format.
+
+#### SBOM Files
+
+For each release archive, you'll find corresponding SBOM files:
+- `pgboundary_Linux_x86_64.tar.gz.spdx.json` - SBOM for Linux x86_64 build
+- `pgboundary_Darwin_arm64.tar.gz.spdx.json` - SBOM for macOS ARM64 build
+- And corresponding files for other architectures
+
+#### Verifying SBOM Integrity
+
+SBOM files are also signed with cosign and included in the checksums:
+
+```bash
+# Verify SBOM signature
+cosign verify-blob \
+  --certificate-identity 'https://github.com/sigterm-de/pgboundary/.github/workflows/release.yml@refs/tags/v1.0.0' \
+  --certificate-oidc-issuer 'https://token.actions.githubusercontent.com' \
+  --cert pgboundary_Linux_x86_64.tar.gz.spdx.json.pem \
+  --signature pgboundary_Linux_x86_64.tar.gz.spdx.json.sig \
+  ./pgboundary_Linux_x86_64.tar.gz.spdx.json
+
+# Verify SBOM checksum
+sha256sum --check --ignore-missing pgboundary_1.0.0_checksums.txt
+```
+
+#### Using SBOM Data
+
+The SBOM can be used for:
+- **Vulnerability scanning**: Import into security tools for dependency analysis
+- **License compliance**: Review all dependency licenses
+- **Supply chain security**: Track the complete software supply chain
+- **Audit requirements**: Meet compliance requirements for software composition
 
 ## Limitations
 
