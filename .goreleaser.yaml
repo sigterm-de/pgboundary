@@ -75,6 +75,7 @@ signs:
       - "--output-certificate=${certificate}"
       - "--output-signature=${signature}"
       - "${artifact}"
+      - "--yes"
     artifacts: checksum
   - id: sbom
     cmd: cosign
@@ -86,6 +87,7 @@ signs:
       - "--output-certificate=${certificate}"
       - "--output-signature=${signature}"
       - "${artifact}"
+      - "--yes"
     artifacts: sbom
 
 release:
