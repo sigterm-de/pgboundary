@@ -59,7 +59,7 @@ A target is a configuration item inside Boundary defining to which entity a conn
     Or install via brew  
     ```
     brew tap sigterm-de/pgboundary https://github.com/sigterm-de/pgboundary
-    brew install pgboundary
+    brew install --cask pgboundary
     ```
 
 3. Copy the files `pgboundary.ini`, `pg_config.ini` and `pg_auth` to a convenient place. The binary tries to find them in the following locations:

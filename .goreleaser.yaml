@@ -27,16 +27,16 @@ builds:
 
 archives:
   - formats:
-      - zip
+      - tar.gz
     files:
       # demo configuration files
-      - pg_auth
-      - pg_config.ini
-      - pgboundary.ini
-      # full readme + license
-      - README.md
-      - pgboundary.png
-      - LICENSE
+      - "pg_auth"
+      - "pg_config.ini"
+      - "pgboundary.ini"
+      # documentation and assets
+      - "README.md"
+      - "pgboundary.png"
+      - "LICENSE"
     # this name template makes the OS and Arch compatible with the results of `uname`.
     name_template: >-
       {{ .ProjectName }}_
@@ -61,32 +61,23 @@ release:
     
     Released by [GoReleaser](https://github.com/goreleaser/goreleaser).
 
-brews:
+homebrew_casks:
   - name: pgboundary
     commit_msg_template: "chore: Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
-    directory: HomebrewFormula
+    directory: Casks
     homepage: "https://github.com/sigterm-de/pgboundary"
     description: "A wrapper around boundary and pgbouncer CLI for integration into IDE/database tooling"
-    install: |
-      # Install the binary into Homebrew's bin directory
-      bin.install "pgboundary"
-  
-      # Install example configuration files into a documentation directory
-      doc.install "pgboundary.ini"
-      doc.install "pg_auth"
-      doc.install "pg_config.ini"
+    license: "MIT"
+    binary: pgboundary
     caveats: |
-      The example configuration file has been installed at:
-        #{doc}/pgboundary.ini
-        #{doc}/pg_config.ini
-        #{doc}/pg_auth
-      You may copy and modify it for your use:
-        cp #{doc}/pgboundary.ini ~/pgboundary/pgboundary.ini
-        cp #{doc}/pg_config.ini ~/pgboundary/pg_config.ini
-        cp #{doc}/pg_auth ~/pgboundary/pg_auth
-    dependencies:
-      - name: boundary
-      - name: pgbouncer
+      pgboundary requires boundary and pgbouncer to be installed separately:
+        brew install boundary
+        brew install pgbouncer
+      
+      Example configuration files are included in the archive and can be found at:
+        #{staged_path}/pgboundary.ini
+        #{staged_path}/pg_config.ini
+        #{staged_path}/pg_auth
     repository:
       owner: sigterm-de
       name: pgboundary
