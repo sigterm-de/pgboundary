@@ -7,7 +7,7 @@ require (
 	github.com/hashicorp/boundary/api v0.0.59
 	github.com/shirou/gopsutil/v4 v4.25.12
 	github.com/spf13/cobra v1.10.2
-	gopkg.in/ini.v1 v1.67.0
+	gopkg.in/ini.v1 v1.67.1
 )
 
 require (
