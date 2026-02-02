@@ -5,7 +5,7 @@ go 1.25.0
 require (
 	github.com/adrg/xdg v0.5.3
 	github.com/hashicorp/boundary/api v0.0.59
-	github.com/shirou/gopsutil/v4 v4.25.12
+	github.com/shirou/gopsutil/v4 v4.26.1
 	github.com/spf13/cobra v1.10.2
 	gopkg.in/ini.v1 v1.67.1
 )
@@ -32,7 +32,7 @@ require (
 	github.com/tklauser/go-sysconf v0.3.16 // indirect
 	github.com/tklauser/numcpus v0.11.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
-	golang.org/x/sys v0.38.0 // indirect
+	golang.org/x/sys v0.40.0 // indirect
 	golang.org/x/time v0.14.0 // indirect
 	google.golang.org/grpc v1.76.0 // indirect
 	google.golang.org/protobuf v1.36.10 // indirect
