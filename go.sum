@@ -13,8 +13,8 @@ github.com/go-ole/go-ole v1.2.6/go.mod h1:pprOEPIfldk/42T2oK7lQ4v4JSDwmV0As9GaiU
 github.com/google/go-cmp v0.5.6/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/gNBxE=
 github.com/google/go-cmp v0.7.0 h1:wk8382ETsv4JYUZwIsn6YpYiWiBsYLSJiTsyBybVuN8=
 github.com/google/go-cmp v0.7.0/go.mod h1:pXiqmnSA92OHEEa9HXL2W4E7lf9JzCmGVUdgjX3N/iU=
-github.com/hashicorp/boundary/api v0.0.59 h1:rs9lwDtJw1pof0LXPPhTRDm9VtKWaThbqnepqpH0kNU=
-github.com/hashicorp/boundary/api v0.0.59/go.mod h1:qhJRAJ+CUuWI2bvFZTHKQ8OgmzDEkBTQ4MTQNujpqnA=
+github.com/hashicorp/boundary/api v0.0.60 h1:HWxdWVZs2yDNhbpbk5/g68tYxHiUtpPBea5weW1yj48=
+github.com/hashicorp/boundary/api v0.0.60/go.mod h1:7NnIEDd8LxNXO3XHaUYO6lCr1XEi/2Ady73MX/JuJRg=
 github.com/hashicorp/go-cleanhttp v0.5.2 h1:035FKYIWjmULyFRBKPs8TBQoi0x6d9G4xc9neXJWAZQ=
 github.com/hashicorp/go-cleanhttp v0.5.2/go.mod h1:kO/YDlP8L1346E6Sodw+PrpBSV4/SoxCXGY6BqNFT48=
 github.com/hashicorp/go-hclog v1.6.3 h1:Qr2kF+eVWjTiYmU7Y31tYlP1h0q/X3Nl3tPGdaB11/k=
