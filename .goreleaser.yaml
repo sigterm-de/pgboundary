@@ -104,7 +104,6 @@ homebrew_casks:
     homepage: "https://github.com/sigterm-de/pgboundary"
     description: "A wrapper around boundary and pgbouncer CLI for integration into IDE/database tooling"
     license: "MIT"
-    binary: pgboundary
     caveats: |
       pgboundary requires boundary and pgbouncer to be installed separately:
         brew install boundary
