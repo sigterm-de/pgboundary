@@ -21,7 +21,7 @@ test-race:
 
 # run goreleaser
 release:
-	goreleaser release --snapshot --clean
+	goreleaser release --snapshot --clean --skip=sign
 
 # Clean build artifacts
 clean:
