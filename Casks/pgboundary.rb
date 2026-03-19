@@ -3,7 +3,7 @@ cask "pgboundary" do
   name "pgboundary"
   desc "A wrapper around boundary and pgbouncer CLI for integration into IDE/database tooling"
   homepage "https://github.com/sigterm-de/pgboundary"
-  version "0.5.6"
+  version "0.5.7"
 
   livecheck do
     skip "Auto-generated on release."
@@ -14,22 +14,22 @@ cask "pgboundary" do
   on_macos do
     on_intel do
       url "https://github.com/sigterm-de/pgboundary/releases/download/v#{version}/pgboundary_Darwin_x86_64.tar.gz"
-      sha256 "04a1c8d3bd3437ec5a31bedcf79318e554a2f49af4643e39cb358a50ae12c5a0"
+      sha256 "11cc4d1a761f90c026d26fab7c139ea4f87c81f97115223b138f36a12f21a353"
     end
     on_arm do
       url "https://github.com/sigterm-de/pgboundary/releases/download/v#{version}/pgboundary_Darwin_arm64.tar.gz"
-      sha256 "e367df04c17a2016eb4ae6164d374b2d645b1fcd7f15f398be473ab84b8cc3d6"
+      sha256 "663c6d62892f48ca105abbaefb26845ee17bf5cd4a2d875322b8dfcca017d8b9"
     end
   end
 
   on_linux do
     on_intel do
       url "https://github.com/sigterm-de/pgboundary/releases/download/v#{version}/pgboundary_Linux_x86_64.tar.gz"
-      sha256 "c8a568cb81a5ba7b4bcb28598bd61690befbbed885fb55139e523ac03a0dac9f"
+      sha256 "5db435fcee1c4575874fb3eb54bf38bf76fe5e5ac6d497d4e1020e469af7a055"
     end
     on_arm do
       url "https://github.com/sigterm-de/pgboundary/releases/download/v#{version}/pgboundary_Linux_arm64.tar.gz"
-      sha256 "c93a1c96bca889cadbefc30b54fd2df9342ef9fa236dfeed2c2994a4d797a5aa"
+      sha256 "a659890469484cd00edbabf723e6dffac72bfba53428b91782332b86c359c1fb"
     end
   end
 
