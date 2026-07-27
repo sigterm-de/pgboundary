@@ -130,6 +130,9 @@ pgboundary shutdown demo-dev
 # Shutdown all connections
 pgboundary shutdown
 
+# Remove stale connection entries (also happens automatically before every command)
+pgboundary cleanup
+
 # Show version information
 pgboundary version
 
@@ -151,7 +154,7 @@ pgboundary version -v
 
 - **First of all**, use the Boundary desktop application to figure out your actual permission set. This wrapper can only provide what is already present.
 - In case the boundary authentication and connection is `OK`, but pgbouncer is `NOK`, please run pgbouncer manually to get more feedback - `pgbouncer --daemon <path>/<to>/pg_config.ini`
-- There might be configuration relicts in `pg_config.ini`. To purge them, please run `pgboundary shutdown` (until a dedicated command is available)
+- There might be configuration relicts in `pg_config.ini`. Run `pgboundary cleanup` to remove stale entries without disconnecting active connections (this also happens automatically before every command). Use `pgboundary shutdown` only if you want to reset everything.
 
 ## Security & Verification
 

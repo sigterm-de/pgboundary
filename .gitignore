@@ -10,8 +10,15 @@ bin/
 *.tmp
 *.log
 
+# Connection files containing plaintext credentials
+.pgboundary-connections/
+
 # OS specific
 .DS_Store
 pgbouncer.log
 # Added by goreleaser init:
 dist/
+
+# Superpowers scratch workspace
+.superpowers/
+docs/superpowers/

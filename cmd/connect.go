@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"fmt"
+	"os"
 
 	"pgboundary/internal/boundary"
 	"pgboundary/internal/pgbouncer"
@@ -62,6 +63,9 @@ func runConnect(cmd *cobra.Command, args []string) error {
 
 	// Reload or start pgbouncer
 	if err := pgbouncer.Reload(Cfg); err != nil {
+		if rollbackErr := pgbouncer.RollbackConnection(Cfg, target, boundaryConn.Pid); rollbackErr != nil {
+			fmt.Fprintf(os.Stderr, "Warning: failed to roll back connection %q after reload failure: %v\n", target, rollbackErr)
+		}
 		return fmt.Errorf("failed to reload pgbouncer after adding target %q: %w", target, err)
 	}
 
