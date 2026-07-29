@@ -44,7 +44,9 @@ var rootCmd = &cobra.Command{
 		}
 
 		// cleanup reports reconcile results itself; don't double-report here.
-		if cmd.Name() != "cleanup" {
+		// Auto-reconcile is opt-in (configuration.auto_clean) since silently
+		// mutating pgbouncer.ini on every command is unexpected by default.
+		if cmd.Name() != "cleanup" && Cfg.Configuration.AutoClean {
 			reportReconcile(Cfg)
 		}
 		return nil

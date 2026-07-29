@@ -34,7 +34,7 @@ GoReleaser, signing artifacts with cosign and generating SBOMs with Syft.
 The codebase models the two-step connection lifecycle described in the README:
 
 1. **`config`** (`config/config.go`) — parses `pgboundary.ini` (via `gopkg.in/ini.v1`) into a
-   `Config` struct (`PgBouncer`, `Scopes`, `Auth`, `Targets`). It also hand-parses the referenced
+   `Config` struct (`PgBouncer`, `Scopes`, `Auth`, `Configuration`, `Targets`). It also hand-parses the referenced
    PgBouncer `conffile` (line-by-line, not via the ini library) to extract `pidfile`/`auth_file`
    paths, and resolves `workdir` relative to the location of `pgboundary.ini` itself. `Target`
    entries are space-separated `key=value` strings (e.g. `host=... target=... database=...`);
@@ -62,10 +62,12 @@ both parse it back out of the include file rather than tracking state elsewhere.
 boundary-backed connection is removed, PgBouncer itself is shut down and the config is cleaned.
 Connection config files live under `<workdir>/.pgboundary-connections/<target>.ini` (not the OS
 temp dir), one fixed path per target. Since cleanup normally only happens through that graceful
-path, `pgbouncer.Reconcile` (`internal/pgbouncer/reconcile.go`) runs before every command (via
-`root.go`'s `PersistentPreRunE`) to drop any `%include` entry left behind by a non-graceful exit
-(crash, reboot, kill -9) — checked by whether the entry's file is missing or its `boundary_pid`
-process is dead. It's also exposed directly as `pgboundary cleanup`.
+path, `pgbouncer.Reconcile` (`internal/pgbouncer/reconcile.go`) drops any `%include` entry left
+behind by a non-graceful exit (crash, reboot, kill -9) — checked by whether the entry's file is
+missing or its `boundary_pid` process is dead. It's always available on demand as `pgboundary
+cleanup`; running it automatically before every command (via `root.go`'s `PersistentPreRunE`) is
+opt-in via `configuration.auto_clean` in `pgboundary.ini` (off by default, since silently mutating
+`pgbouncer.ini` as a side effect of unrelated commands is unexpected behavior for a CLI).
 
 ## Conventions
 

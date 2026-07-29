@@ -238,3 +238,73 @@ func TestParseTarget(t *testing.T) {
 		})
 	}
 }
+
+func TestLoadConfig_AutoClean(t *testing.T) {
+	writeFixture := func(t *testing.T, configurationSection string) string {
+		t.Helper()
+		tmpDir := t.TempDir()
+
+		configContent := `[pgbouncer]
+workdir = ./work
+conffile = pgbouncer.ini
+
+[scopes]
+auth = auth
+target = target
+
+[targets]
+app1 = host=https://boundary.example.com target=app1-ro
+` + configurationSection
+
+		workDir := filepath.Join(tmpDir, "work")
+		if err := os.MkdirAll(workDir, 0755); err != nil {
+			t.Fatal(err)
+		}
+		pgbouncerContent := "[pgbouncer]\npidfile = pgbouncer.pid\nauth_file = userlist.txt\n"
+		if err := os.WriteFile(filepath.Join(workDir, "pgbouncer.ini"), []byte(pgbouncerContent), 0644); err != nil {
+			t.Fatal(err)
+		}
+
+		configPath := filepath.Join(tmpDir, "config.ini")
+		if err := os.WriteFile(configPath, []byte(configContent), 0644); err != nil {
+			t.Fatal(err)
+		}
+		return configPath
+	}
+
+	tests := []struct {
+		name                 string
+		configurationSection string
+		wantAutoClean        bool
+	}{
+		{
+			name:                 "no configuration section defaults to false",
+			configurationSection: "",
+			wantAutoClean:        false,
+		},
+		{
+			name:                 "auto_clean = true enables it",
+			configurationSection: "\n[configuration]\nauto_clean = true\n",
+			wantAutoClean:        true,
+		},
+		{
+			name:                 "auto_clean = false is explicit off",
+			configurationSection: "\n[configuration]\nauto_clean = false\n",
+			wantAutoClean:        false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			configPath := writeFixture(t, tt.configurationSection)
+
+			got, err := LoadConfig(configPath)
+			if err != nil {
+				t.Fatalf("LoadConfig() error = %v", err)
+			}
+			if got.Configuration.AutoClean != tt.wantAutoClean {
+				t.Errorf("Configuration.AutoClean = %v, want %v", got.Configuration.AutoClean, tt.wantAutoClean)
+			}
+		})
+	}
+}
