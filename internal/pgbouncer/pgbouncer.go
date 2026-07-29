@@ -27,18 +27,22 @@ func UpdateConfig(cfg *config.Config, targetName string, conn *boundary.Connecti
 		return fmt.Errorf("target %q not found in configuration", targetName)
 	}
 
-	tmpDir, err := os.MkdirTemp("", "pgwrap-*")
-	if err != nil {
-		return fmt.Errorf("failed to create temp dir: %w", err)
+	connectionsDir := filepath.Join(cfg.PgBouncer.WorkDir, ".pgboundary-connections")
+	if err := os.MkdirAll(connectionsDir, 0700); err != nil {
+		return fmt.Errorf("failed to create connections directory: %w", err)
 	}
 
-	tmpFile := filepath.Join(tmpDir, "db.ini")
+	connFile := filepath.Join(connectionsDir, targetName+".ini")
 
 	// Extract config string creation for better readability
 	configContent := formatDatabaseConfig(targetName, conn, target.Database)
 
-	if err := os.WriteFile(tmpFile, []byte(configContent), 0600); err != nil {
-		return fmt.Errorf("failed to write temp config: %w", err)
+	if err := os.WriteFile(connFile, []byte(configContent), 0600); err != nil {
+		return fmt.Errorf("failed to write connection config: %w", err)
+	}
+
+	if err := removeIncludeLine(cfg.PgBouncer.ConfFile, connFile); err != nil {
+		return fmt.Errorf("failed to remove existing include for %s: %w", targetName, err)
 	}
 
 	f, err := os.OpenFile(cfg.PgBouncer.ConfFile, os.O_APPEND|os.O_WRONLY, 0644)
@@ -51,11 +55,68 @@ func UpdateConfig(cfg *config.Config, targetName string, conn *boundary.Connecti
 		}
 	}()
 
-	if _, err := fmt.Fprintf(f, "\n%%include %s\n", tmpFile); err != nil {
+	if _, err := fmt.Fprintf(f, "\n%%include %s\n", connFile); err != nil {
 		return fmt.Errorf("failed to update pgbouncer config: %w", err)
 	}
 
 	return nil
+}
+
+// removeIncludeLine removes any %include line in confFile that points at
+// includePath, so a repeated UpdateConfig call for the same target doesn't
+// accumulate duplicate entries.
+func removeIncludeLine(confFile, includePath string) error {
+	content, err := os.ReadFile(confFile)
+	if err != nil {
+		return fmt.Errorf("failed to read pgbouncer config: %w", err)
+	}
+
+	lines := strings.Split(string(content), "\n")
+	newLines := make([]string, 0, len(lines))
+	changed := false
+
+	for _, line := range lines {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "%include") {
+			existing := strings.TrimSpace(strings.TrimPrefix(trimmed, "%include"))
+			if existing == includePath {
+				changed = true
+				continue
+			}
+		}
+		newLines = append(newLines, line)
+	}
+
+	if !changed {
+		return nil
+	}
+
+	return os.WriteFile(confFile, []byte(strings.Join(newLines, "\n")), 0644)
+}
+
+// RollbackConnection undoes a partially-applied UpdateConfig call: it
+// removes the %include entry and connection file for targetName, and kills
+// the boundary connect process backing it. Used when UpdateConfig succeeded
+// but the following reload/start of pgbouncer failed, so a failed connect
+// attempt leaves no trace.
+func RollbackConnection(cfg *config.Config, targetName string, boundaryPid int) error {
+	removeErr := removeConnection(cfg, targetName)
+
+	var killErr error
+	if boundaryPid > 0 {
+		killErr = process.KillProcess(boundaryPid)
+	}
+
+	switch {
+	case removeErr != nil && killErr != nil:
+		return fmt.Errorf("failed to remove connection %s: %v; failed to kill boundary process %d: %w", targetName, removeErr, boundaryPid, killErr)
+	case removeErr != nil:
+		return fmt.Errorf("failed to remove connection %s: %w", targetName, removeErr)
+	case killErr != nil:
+		return fmt.Errorf("failed to kill boundary process %d: %w", boundaryPid, killErr)
+	default:
+		return nil
+	}
 }
 
 func formatDatabaseConfig(targetName string, conn *boundary.Connection, dbName string) string {

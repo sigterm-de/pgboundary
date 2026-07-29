@@ -83,6 +83,12 @@ A target is a configuration item inside Boundary defining to which entity a conn
    ; default authentication method
    method = oidc
    
+   [configuration]
+   ; reconcile stale pgbouncer %include entries automatically before every
+   ; command; off by default. Run `pgboundary cleanup` to do it on demand
+   ; regardless of this setting.
+   auto_clean = false
+   
    [pgbouncer]
    ; workdir is either absolute or relative to this file; holds the `conffile` and from there the `auth_file`
    ; recommendation: leave all files in 1 place
@@ -130,6 +136,9 @@ pgboundary shutdown demo-dev
 # Shutdown all connections
 pgboundary shutdown
 
+# Remove stale connection entries (also happens automatically before every command)
+pgboundary cleanup
+
 # Show version information
 pgboundary version
 
@@ -142,6 +151,7 @@ pgboundary version -v
 - For shared database instances, specify the database name in the target configuration
 - Scopes can be set globally in the `[scopes]` section or per-target
 - Use the verbose flag (`-v`) for debugging connection issues
+- Set `auto_clean = true` in `[configuration]` if you'd rather have stale connection entries reconciled automatically on every command, instead of running `pgboundary cleanup` yourself
 - If `pgboundary` is in your `$PATH`, you can set it up as a connection script in your tooling
 - In some IDEs you may have to set something like "Single Database Mode" (from [JetBrains](https://www.jetbrains.com/help/datagrip/2024.3/data-sources-and-drivers-dialog.html?data.sources.and.drivers.dialog#optionsTab))  
   > In the database tree view, show and enable only the database that you specified in the connection settings.  
@@ -151,7 +161,7 @@ pgboundary version -v
 
 - **First of all**, use the Boundary desktop application to figure out your actual permission set. This wrapper can only provide what is already present.
 - In case the boundary authentication and connection is `OK`, but pgbouncer is `NOK`, please run pgbouncer manually to get more feedback - `pgbouncer --daemon <path>/<to>/pg_config.ini`
-- There might be configuration relicts in `pg_config.ini`. To purge them, please run `pgboundary shutdown` (until a dedicated command is available)
+- There might be configuration relicts in `pg_config.ini`. Run `pgboundary cleanup` to remove stale entries without disconnecting active connections (or set `auto_clean = true` in `[configuration]` to have this happen automatically before every command). Use `pgboundary shutdown` only if you want to reset everything.
 
 ## Security & Verification
 

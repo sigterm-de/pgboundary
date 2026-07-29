@@ -4,8 +4,10 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"pgboundary/config"
+	"pgboundary/internal/pgbouncer"
 	"pgboundary/internal/process"
 
 	"github.com/adrg/xdg"
@@ -33,13 +35,19 @@ var rootCmd = &cobra.Command{
 			if err != nil {
 				return fmt.Errorf("failed to load configuration from %s: %w", configFile, err)
 			}
-			return nil
+		} else {
+			// Otherwise, check default locations
+			Cfg, err = loadConfigFromDefaultLocations()
+			if err != nil {
+				return fmt.Errorf("failed to load configuration: %w", err)
+			}
 		}
 
-		// Otherwise, check default locations
-		Cfg, err = loadConfigFromDefaultLocations()
-		if err != nil {
-			return fmt.Errorf("failed to load configuration: %w", err)
+		// cleanup reports reconcile results itself; don't double-report here.
+		// Auto-reconcile is opt-in (configuration.auto_clean) since silently
+		// mutating pgbouncer.ini on every command is unexpected by default.
+		if cmd.Name() != "cleanup" && Cfg.Configuration.AutoClean {
+			reportReconcile(Cfg)
 		}
 		return nil
 	},
@@ -78,6 +86,26 @@ func loadConfigFromDefaultLocations() (*config.Config, error) {
 	return nil, fmt.Errorf("could not find configuration file in default locations (./pgboundary.ini, ~/.pgboundary/pgboundary.ini, $XDG_CONFIG_HOME/pgboundary/pgboundary.ini): %w", configErr)
 }
 
+// reportReconcile removes stale pgbouncer %include entries and prints a
+// summary of what changed. Failures are non-fatal: a broken reconcile pass
+// shouldn't block the command the user actually ran.
+func reportReconcile(cfg *config.Config) {
+	removed, err := pgbouncer.Reconcile(cfg)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Warning: failed to reconcile pgbouncer config: %v\n", err)
+		return
+	}
+	if len(removed) == 0 {
+		return
+	}
+
+	summary := make([]string, len(removed))
+	for i, entry := range removed {
+		summary[i] = fmt.Sprintf("%s (%s)", entry.Target, entry.Reason)
+	}
+	fmt.Fprintf(os.Stderr, "cleaned up %d stale connection(s): %s\n", len(removed), strings.Join(summary, ", "))
+}
+
 func Execute() error {
 	return rootCmd.Execute()
 }
@@ -86,5 +114,5 @@ func init() {
 	rootCmd.PersistentFlags().StringVarP(&configFile, "config", "c", "", "config file (default: ./pgboundary.ini, ~/.pgboundary/pgboundary.ini, or $XDG_CONFIG_HOME/pgboundary/pgboundary.ini)")
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "verbose output")
 
-	rootCmd.AddCommand(listCmd, connectCmd, shutdownCmd, versionCmd)
+	rootCmd.AddCommand(listCmd, connectCmd, shutdownCmd, versionCmd, cleanupCmd)
 }

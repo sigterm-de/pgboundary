@@ -11,10 +11,18 @@ import (
 )
 
 type Config struct {
-	PgBouncer PgBouncerConfig
-	Scopes    ScopesConfig
-	Auth      AuthConfig
-	Targets   map[string]Target
+	PgBouncer     PgBouncerConfig
+	Scopes        ScopesConfig
+	Auth          AuthConfig
+	Configuration ConfigurationConfig
+	Targets       map[string]Target
+}
+
+type ConfigurationConfig struct {
+	// AutoClean controls whether stale pgbouncer %include entries are
+	// reconciled automatically before every command. Off by default —
+	// use `pgboundary cleanup` to run it explicitly instead.
+	AutoClean bool
 }
 
 type PgBouncerConfig struct {
@@ -69,6 +77,9 @@ func LoadConfig(path string) (*Config, error) {
 	if cfg.Auth.Method == "" {
 		cfg.Auth.Method = "oidc" // default to oidc if not specified
 	}
+
+	// Load general configuration
+	cfg.Configuration.AutoClean = file.Section("configuration").Key("auto_clean").MustBool(false)
 
 	// Resolve workdir path
 	if filepath.IsAbs(cfg.PgBouncer.WorkDir) {
