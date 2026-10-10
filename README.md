@@ -2,6 +2,14 @@
 
 This is a simple wrapper around the `boundary` and `pgbouncer` CLI tools.
 
+## Update 2026-10-08
+
+from [github.com/hashicorp/boundary](https://github.com/hashicorp/boundary)
+
+> Boundary Community Edition (CE) is no longer under active development, and this repository has been archived as of October 8, 2026. Future Boundary development will focus on HCP Boundary and Boundary Enterprise, where we can provide enterprise grade human and agentic access capabilities
+
+---
+
 ## Integration into IDE/Database tooling
 
 This project is for a specific use case
